@@ -44,3 +44,11 @@ bool square::operator==(const square& other) const
 {
 	return possibles == other.possibles;
 }
+
+int square::val() const
+{
+	if (possibles.size() == 1)
+		return *(possibles.begin());
+	else
+		throw 42;
+}

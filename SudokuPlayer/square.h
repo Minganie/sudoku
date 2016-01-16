@@ -12,10 +12,11 @@ public:
 	square();
 	square(int val);
 	square(std::set<int> vals);
+	~square();
 	void add(int val);
 	void rem(int val);
+	int val() const;
 	std::string to_string() const;
-	~square();
 	bool operator==(const square&) const;
 };
 

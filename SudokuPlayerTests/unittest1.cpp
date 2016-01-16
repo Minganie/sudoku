@@ -55,5 +55,21 @@ namespace SudokuPlayerTests
 			s.rem(8);
 			Assert::AreEqual(s, square{ std::set < int > {1, 2} });
 		}
+
+		TEST_METHOD(TestValid)
+		{
+			grid valid_hole = grid("123456789                                                               912345678");
+			valid_hole.print();
+			grid valid_full = grid("123456789234567891345678912456789123567891234678912345789123456891234567912345678");
+			Assert::IsTrue(valid_hole.is_compatible());
+			Assert::IsTrue(valid_full.is_compatible());
+
+			grid invalid_row = grid("12145                                                                            ");
+			grid invalid_col = grid("1        13                                                                      ");
+			grid invalid_3x3 = grid("12345678 21456789                                                                ");
+			Assert::IsFalse(invalid_row.is_compatible());
+			Assert::IsFalse(invalid_col.is_compatible());
+			Assert::IsFalse(invalid_3x3.is_compatible());
+		}
 	};
 }

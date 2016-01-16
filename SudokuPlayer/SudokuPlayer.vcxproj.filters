@@ -24,12 +24,30 @@
     <ClCompile Include="square.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="row.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="col.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nonadrant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="square.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="row.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="col.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nonadrant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -8,6 +8,38 @@ grid::grid()
 		squares.push_back(square{});
 		degree.insert(std::pair < int, std::pair<int, int> > {20, std::pair < int, int > {(i / 9), (i % 9)}});
 	}
+	// rows
+	for (int i = 0; i < 9; i++)
+	{
+		std::vector<square&> row_i{};
+		for (int j = 0; j < 9; j++)
+			row_i.push_back(at(i, j));
+		rows.push_back(row{ row_i });
+	}
+	// cols (could do this in the row loop, but this is clearer, will see later with metrics if it's a performance problem
+	for (int j = 0; j < 9; j++)
+	{
+		std::vector<square&> col_j{};
+		for (int i = 0; i < 9; i++)
+			col_j.push_back(at(i, j));
+		cols.push_back(col{ col_j });
+	}
+	// nonadrants (I'd have called them 3x3's but that wasn't a valid variable name)
+	for (int k = 0; k < 9; k++)
+	{
+		std::vector<square&> nonadrant_k{};
+		int r = k / 3;
+		int c = k % 3;
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				nonadrant_k.push_back(at(i+3*r, j+3*c));
+			}
+		}
+		nonadrants.push_back(nonadrant{ nonadrant_k });
+	}
 }
 
 grid::grid(std::string vals)
@@ -82,7 +114,7 @@ grid::~grid()
 {
 }
 
-void grid::print()
+void grid::print() const
 {
 	std::cout << "+-------+-------+-------+" << std::endl;
 	std::cout << "| " << at(0, 0).to_string() << ' ' << at(0, 1).to_string() << ' ' << at(0, 2).to_string() << " | "
@@ -122,7 +154,12 @@ square& grid::at(int i, int j)
 	return squares.at(i * 9 + j);
 }
 
-std::string grid::to_string()
+const square& grid::at(int i, int j) const
+{
+	return squares.at(i * 9 + j);
+}
+
+std::string grid::to_string() const
 {
 	std::string s;
 	for (int i = 0; i < 9; i++)
@@ -136,8 +173,50 @@ std::string grid::to_string()
 	return s;
 }
 
-bool grid::is_done()
+bool grid::is_done() const
 {
 	std::string s = to_string();
 	return s.find(' ') == std::string::npos;
+}
+
+bool grid::is_compatible() const
+{
+	// one of each digit per row and column
+	for (int r = 0; r < 9; r++)
+	{
+		std::vector<int> row_count( 9, 0 );
+		std::vector<int> col_count( 9, 0 );
+		// Iterating by row and by column in the same loop is totally killing my cache here,
+		// but let's see if it's a real (metrics) problem before I do something about it
+		for (int j = 0; j < 9; j++)
+		{
+			try
+			{
+				row_count.at(at(r, j).val()) += 1;
+				if (row_count.at(at(r, j).val()) > 1)
+					return false;
+			}
+			catch (int e)
+			{
+				// The square is not assigned
+			}
+			try
+			{
+				col_count.at(at(j, r).val()) += 1;
+				if (col_count.at(at(j, r).val()) > 1)
+					return false;
+			}
+			catch (int e)
+			{
+				// The square is not assigned
+			}
+		}
+	}
+	// one of each digit per 3x3
+	for (int k = 0; k < 9; k++)
+	{
+		std::vector<int> count(9, 0);
+	}
+
+	return true;
 }
