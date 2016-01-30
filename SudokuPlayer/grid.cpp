@@ -11,23 +11,23 @@ grid::grid()
 	// rows
 	for (int i = 0; i < 9; i++)
 	{
-		std::vector<square&> row_i{};
+		std::vector<square*> row_i{};
 		for (int j = 0; j < 9; j++)
-			row_i.push_back(at(i, j));
-		rows.push_back(row{ row_i });
+			row_i.push_back(&at(i, j));
+		rows.push_back(nonasquare{ row_i });
 	}
 	// cols (could do this in the row loop, but this is clearer, will see later with metrics if it's a performance problem
 	for (int j = 0; j < 9; j++)
 	{
-		std::vector<square&> col_j{};
+		std::vector<square*> col_j{};
 		for (int i = 0; i < 9; i++)
-			col_j.push_back(at(i, j));
-		cols.push_back(col{ col_j });
+			col_j.push_back(&at(i, j));
+		cols.push_back(nonasquare{ col_j });
 	}
 	// nonadrants (I'd have called them 3x3's but that wasn't a valid variable name)
 	for (int k = 0; k < 9; k++)
 	{
-		std::vector<square&> nonadrant_k{};
+		std::vector<square*> nonadrant_k{};
 		int r = k / 3;
 		int c = k % 3;
 
@@ -35,10 +35,10 @@ grid::grid()
 		{
 			for (int j = 0; j < 3; j++)
 			{
-				nonadrant_k.push_back(at(i+3*r, j+3*c));
+				nonadrant_k.push_back(&at(i+3*r, j+3*c));
 			}
 		}
-		nonadrants.push_back(nonadrant{ nonadrant_k });
+		nonadrants.push_back(nonasquare{ nonadrant_k });
 	}
 }
 
@@ -50,6 +50,38 @@ grid::grid(std::string vals)
 			squares.push_back(square{ (*it) - 48 });
 		else
 			squares.push_back(square{});
+	}
+	// rows
+	for (int i = 0; i < 9; i++)
+	{
+		std::vector<square*> row_i{};
+		for (int j = 0; j < 9; j++)
+			row_i.push_back(&at(i, j));
+		rows.push_back(nonasquare{ row_i });
+	}
+	// cols (could do this in the row loop, but this is clearer, will see later with metrics if it's a performance problem
+	for (int j = 0; j < 9; j++)
+	{
+		std::vector<square*> col_j{};
+		for (int i = 0; i < 9; i++)
+			col_j.push_back(&at(i, j));
+		cols.push_back(nonasquare{ col_j });
+	}
+	// nonadrants (I'd have called them 3x3's but that wasn't a valid variable name)
+	for (int k = 0; k < 9; k++)
+	{
+		std::vector<square*> nonadrant_k{};
+		int r = k / 3;
+		int c = k % 3;
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				nonadrant_k.push_back(&at(i + 3 * r, j + 3 * c));
+			}
+		}
+		nonadrants.push_back(nonasquare{ nonadrant_k });
 	}
 	for (int i = 0; i < 9 * 9; i++)
 	{
@@ -181,42 +213,20 @@ bool grid::is_done() const
 
 bool grid::is_compatible() const
 {
-	// one of each digit per row and column
-	for (int r = 0; r < 9; r++)
+	for (nonasquare r : rows)
 	{
-		std::vector<int> row_count( 9, 0 );
-		std::vector<int> col_count( 9, 0 );
-		// Iterating by row and by column in the same loop is totally killing my cache here,
-		// but let's see if it's a real (metrics) problem before I do something about it
-		for (int j = 0; j < 9; j++)
-		{
-			try
-			{
-				row_count.at(at(r, j).val()) += 1;
-				if (row_count.at(at(r, j).val()) > 1)
-					return false;
-			}
-			catch (int e)
-			{
-				// The square is not assigned
-			}
-			try
-			{
-				col_count.at(at(j, r).val()) += 1;
-				if (col_count.at(at(j, r).val()) > 1)
-					return false;
-			}
-			catch (int e)
-			{
-				// The square is not assigned
-			}
-		}
+		if (!r.is_valid())
+			return false;
 	}
-	// one of each digit per 3x3
-	for (int k = 0; k < 9; k++)
+	for (nonasquare c : cols)
 	{
-		std::vector<int> count(9, 0);
+		if (!c.is_valid())
+			return false;
 	}
-
+	for (nonasquare n : nonadrants)
+	{
+		if (!n.is_valid())
+			return false;
+	}
 	return true;
 }

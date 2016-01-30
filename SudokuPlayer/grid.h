@@ -4,16 +4,15 @@
 #include <map>
 #include <vector>
 #include "square.h"
-#include "row.h"
-#include "col.h"
-#include "nonadrant.h"
+#include "nonasquare.h"
 
 class grid
 {
 	std::vector<square> squares;
-	std::vector<row> rows;
-	std::vector<col> cols;
-	std::vector<nonadrant> nonadrants;
+public:	// FOR TESTS ONLY
+	std::vector<nonasquare> rows;
+	std::vector<nonasquare> cols;
+	std::vector<nonasquare> nonadrants;
 
 	std::multimap<int, std::pair<int, int>> degree;
 	square& at(int i, int j);
@@ -22,6 +21,8 @@ class grid
 public:
 	grid();
 	grid(std::string);
+	grid(const grid&) = delete;
+	grid& operator=(const grid&) = delete;
 	~grid();
 	void print() const;
 	void backtracking_search();

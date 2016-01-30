@@ -65,18 +65,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="col.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="nonadrant.cpp" />
-    <ClCompile Include="row.cpp" />
+    <ClCompile Include="nonasquare.cpp" />
     <ClCompile Include="square.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="col.h" />
     <ClInclude Include="grid.h" />
-    <ClInclude Include="nonadrant.h" />
-    <ClInclude Include="row.h" />
+    <ClInclude Include="nonasquare.h" />
     <ClInclude Include="square.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

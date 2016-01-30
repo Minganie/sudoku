@@ -24,13 +24,7 @@
     <ClCompile Include="square.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="row.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="col.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nonadrant.cpp">
+    <ClCompile Include="nonasquare.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,13 +35,7 @@
     <ClInclude Include="square.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="row.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="col.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nonadrant.h">
+    <ClInclude Include="nonasquare.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
