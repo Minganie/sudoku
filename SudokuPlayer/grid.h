@@ -2,6 +2,7 @@
 #define GRID_H
 
 #include <map>
+#include <set>
 #include <vector>
 #include "square.h"
 #include "nonasquare.h"
@@ -18,6 +19,7 @@ public:	// FOR TESTS ONLY
 	square& at(int i, int j);
 	const square& at(int i, int j) const;
 	void backtrack();
+	std::set<std::pair<int, int>> find_constraints(int, int) const;
 public:
 	grid();
 	grid(std::string);

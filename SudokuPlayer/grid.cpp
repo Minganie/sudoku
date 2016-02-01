@@ -230,3 +230,40 @@ bool grid::is_compatible() const
 	}
 	return true;
 }
+
+
+std::set<std::pair<int, int>> grid::find_constraints(int i, int j) const
+{
+	int meta_i = i / 3;	// nonadrant coordinates
+	int meta_j = j / 3;
+
+	// What are the positions of the other squares in the nonadrant?
+	std::set<std::pair<int, int>> pos{};
+	for (int a = 0; a < 3; a++)
+	{
+		for (int b = 0; b < 3; b++)
+		{
+			if (meta_i * 3 + a != i || meta_j * 3 + b != j)
+				pos.insert(std::make_pair(meta_i*3 + a, meta_j*3 + b));
+		}
+	}
+	
+	// What's the rest of the line?
+	std::set<int> metas_j{ 0, 1, 2 };
+	metas_j.erase(meta_j);
+	for (int b : metas_j)
+	{
+		for (int x = 0; x < 3; x++)
+			pos.insert(std::make_pair(i, b * 3 + x));
+	}
+	// What's the rest of the column?
+	std::set<int> metas_i{ 0, 1, 2 };
+	metas_i.erase(meta_i);
+	for (int a : metas_i)
+	{
+		for (int y = 0; y < 3; y++)
+			pos.insert(std::make_pair(a*3 + y, j));
+	}
+
+	return pos;
+}

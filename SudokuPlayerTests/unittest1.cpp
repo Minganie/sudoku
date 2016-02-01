@@ -9,8 +9,15 @@ namespace Microsoft{
 	namespace VisualStudio {
 		namespace CppUnitTestFramework {
 			template<>
-			static std::wstring ToString<square>(const square  & sq) {
+			static std::wstring ToString<square>(const square& sq) {
 				return std::wstring(begin(sq.to_string()), end(sq.to_string()));
+			}
+			template<>
+			static std::wstring ToString<std::set<std::pair<int, int>>>(const std::set<std::pair<int, int>> & s) {
+				std::wstringstream ws{};
+				for (std::pair<int, int> p : s)
+					ws << L"(" << p.first << L" " << p.second << L") ";
+				return ws.str();
 			}
 		}
 	}
@@ -181,6 +188,134 @@ namespace SudokuPlayerTests
 		{
 			grid invalid_3x3{ "12345678 21456789                                                                " };
 			Assert::IsFalse(invalid_3x3.is_compatible());
+		}
+
+		TEST_METHOD(TestFindConstraintSquares00)
+		{
+			// nonadrant 0,0 = the first 3x3 on the top left; meta_i = 0, meta_j = 0
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(1,2);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(0, 0), std::make_pair(0, 1), std::make_pair(0, 2),
+				std::make_pair(1, 0), std::make_pair(1, 1),
+				std::make_pair(2, 0), std::make_pair(2, 1), std::make_pair(2, 2),
+				std::make_pair(1, 3), std::make_pair(1, 4), std::make_pair(1, 5), 
+				std::make_pair(1, 6), std::make_pair(1, 7), std::make_pair(1, 8), 
+				std::make_pair(3, 2), std::make_pair(4, 2), std::make_pair(5, 2), 
+				std::make_pair(6, 2), std::make_pair(7, 2), std::make_pair(8, 2) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares01)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(2, 4);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(0, 3), std::make_pair(0, 4), std::make_pair(0, 5),
+				std::make_pair(1, 3), std::make_pair(1, 4), std::make_pair(1, 5),
+				std::make_pair(2, 3), std::make_pair(2, 5),
+				std::make_pair(2, 0), std::make_pair(2, 1), std::make_pair(2, 2),
+				std::make_pair(2, 6), std::make_pair(2, 7), std::make_pair(2, 8),
+				std::make_pair(3, 4), std::make_pair(4, 4), std::make_pair(5, 4),
+				std::make_pair(6, 4), std::make_pair(7, 4), std::make_pair(8, 4) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares02)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(0, 8);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(0, 6), std::make_pair(0, 7),
+				std::make_pair(1, 6), std::make_pair(1, 7), std::make_pair(1, 8),
+				std::make_pair(2, 6), std::make_pair(2, 7), std::make_pair(2, 8),
+				std::make_pair(0, 0), std::make_pair(0, 1), std::make_pair(0, 2),
+				std::make_pair(0, 3), std::make_pair(0, 4), std::make_pair(0, 5),
+				std::make_pair(3, 8), std::make_pair(4, 8), std::make_pair(5, 8),
+				std::make_pair(6, 8), std::make_pair(7, 8), std::make_pair(8, 8) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares10)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(3, 1);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(3, 0), std::make_pair(3, 2),
+				std::make_pair(4, 0), std::make_pair(4, 1), std::make_pair(4, 2),
+				std::make_pair(5, 0), std::make_pair(5, 1), std::make_pair(5, 2),
+				std::make_pair(3, 3), std::make_pair(3, 4), std::make_pair(3, 5),
+				std::make_pair(3, 6), std::make_pair(3, 7), std::make_pair(3, 8),
+				std::make_pair(0, 1), std::make_pair(1, 1), std::make_pair(2, 1),
+				std::make_pair(6, 1), std::make_pair(7, 1), std::make_pair(8, 1) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares11)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(4, 4);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(3, 3), std::make_pair(3, 4), std::make_pair(3, 5),
+				std::make_pair(4, 3), std::make_pair(4, 5),
+				std::make_pair(5, 3), std::make_pair(5, 4), std::make_pair(5, 5),
+				std::make_pair(4, 0), std::make_pair(4, 1), std::make_pair(4, 2),
+				std::make_pair(4, 6), std::make_pair(4, 7), std::make_pair(4, 8),
+				std::make_pair(0, 4), std::make_pair(1, 4), std::make_pair(2, 4),
+				std::make_pair(6, 4), std::make_pair(7, 4), std::make_pair(8, 4) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares12)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(5, 6);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(3, 6), std::make_pair(3, 7), std::make_pair(3, 8),
+				std::make_pair(4, 6), std::make_pair(4, 7), std::make_pair(4, 8),
+				std::make_pair(5, 7), std::make_pair(5, 8),
+				std::make_pair(5, 0), std::make_pair(5, 1), std::make_pair(5, 2),
+				std::make_pair(5, 3), std::make_pair(5, 4), std::make_pair(5, 5),
+				std::make_pair(0, 6), std::make_pair(1, 6), std::make_pair(2, 6),
+				std::make_pair(6, 6), std::make_pair(7, 6), std::make_pair(8, 6) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares20)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(6, 0);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(6, 1), std::make_pair(6, 2),
+				std::make_pair(7, 0), std::make_pair(7, 1), std::make_pair(7, 2),
+				std::make_pair(8, 0), std::make_pair(8, 1), std::make_pair(8, 2),
+				std::make_pair(6, 3), std::make_pair(6, 4), std::make_pair(6, 5),
+				std::make_pair(6, 6), std::make_pair(6, 7), std::make_pair(6, 8),
+				std::make_pair(0, 0), std::make_pair(1, 0), std::make_pair(2, 0),
+				std::make_pair(3, 0), std::make_pair(4, 0), std::make_pair(5, 0) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares21)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(7, 3);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(6, 3), std::make_pair(6, 4), std::make_pair(6, 5),
+				std::make_pair(7, 4), std::make_pair(7, 5),
+				std::make_pair(8, 3), std::make_pair(8, 4), std::make_pair(8, 5),
+				std::make_pair(7, 0), std::make_pair(7, 1), std::make_pair(7, 2),
+				std::make_pair(7, 6), std::make_pair(7, 7), std::make_pair(7, 8),
+				std::make_pair(0, 3), std::make_pair(1, 3), std::make_pair(2, 3),
+				std::make_pair(3, 3), std::make_pair(4, 3), std::make_pair(5, 3) };
+			Assert::AreEqual(res, expected);
+		}
+		TEST_METHOD(TestFindConstraintSquares22)
+		{
+			grid valid_full{ "123456789456789123789123456234567891567891234891234567345678912678912345912345678" };
+			std::set<std::pair<int, int>> res = valid_full.find_constraints(8, 8);
+			std::set<std::pair<int, int>> expected{
+				std::make_pair(6, 6), std::make_pair(6, 7), std::make_pair(6, 8),
+				std::make_pair(7, 6), std::make_pair(7, 7), std::make_pair(7, 8),
+				std::make_pair(8, 6), std::make_pair(8, 7),
+				std::make_pair(8, 0), std::make_pair(8, 1), std::make_pair(8, 2),
+				std::make_pair(8, 3), std::make_pair(8, 4), std::make_pair(8, 5),
+				std::make_pair(0, 8), std::make_pair(1, 8), std::make_pair(2, 8),
+				std::make_pair(3, 8), std::make_pair(4, 8), std::make_pair(5, 8) };
+			Assert::AreEqual(res, expected);
 		}
 	};
 }
