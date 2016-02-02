@@ -5,6 +5,8 @@
 #include "../SudokuPlayer/square.h"
 #include "../SudokuPlayer/nonasquare.h"
 
+// AreEqual( expected, actual)
+
 namespace Microsoft{
 	namespace VisualStudio {
 		namespace CppUnitTestFramework {
@@ -17,6 +19,13 @@ namespace Microsoft{
 				std::wstringstream ws{};
 				for (std::pair<int, int> p : s)
 					ws << L"(" << p.first << L" " << p.second << L") ";
+				return ws.str();
+			}
+			template<>
+			static std::wstring ToString < std::multimap<int, std::pair<int, int>>>(const std::multimap<int, std::pair<int, int>> & m) {
+				std::wstringstream ws{};
+				for (std::pair<int, std::pair<int, int>> p : m)
+					ws << L"[" << p.first << L"=>(" << p.second.first << L"," << p.second.second << ")] ";
 				return ws.str();
 			}
 		}
@@ -45,31 +54,31 @@ namespace SudokuPlayerTests
 		TEST_METHOD(TestFullToString)
 		{
 			grid sudoku{ "123456789234567891345678912456789123567891234678912345789123456891234567912345678" };
-			Assert::AreEqual(sudoku.to_string(), std::string{ "123456789234567891345678912456789123567891234678912345789123456891234567912345678" });
+			Assert::AreEqual(std::string{ "123456789234567891345678912456789123567891234678912345789123456891234567912345678" }, sudoku.to_string());
 		}
 
 		TEST_METHOD(TestHoleToString)
 		{
 			grid sudoku{ "123456789 34567891345678912456789123567891234678912345789123456891234567912345678" };
-			Assert::AreEqual(sudoku.to_string(), std::string{ "123456789 34567891345678912456789123567891234678912345789123456891234567912345678" });
+			Assert::AreEqual(std::string{ "123456789 34567891345678912456789123567891234678912345789123456891234567912345678" }, sudoku.to_string());
 		}
 
 		TEST_METHOD(TestAtRow0)
 		{
 			grid sudoku{ "123456789                                                                        " };
-			Assert::AreEqual(sudoku.at(0, 0).val(), 1);
+			Assert::AreEqual(1, sudoku.at(0, 0).val());
 		}
 
 		TEST_METHOD(TestAtRow1)
 		{
 			grid sudoku{ "123      456      789                                                            " };
-			Assert::AreEqual(sudoku.at(1, 1).val(), 5);
+			Assert::AreEqual(5, sudoku.at(1, 1).val());
 		}
 
 		TEST_METHOD(TestAtRow2)
 		{
 			grid sudoku{ "123      456      789                                                            " };
-			Assert::AreEqual(sudoku.at(2, 2).val(), 9);
+			Assert::AreEqual(9, sudoku.at(2, 2).val());
 		}
 
 		TEST_METHOD(TestRowIteration)
@@ -117,7 +126,7 @@ namespace SudokuPlayerTests
 			square s9{ 9 };
 			std::vector < square * > v{ &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9 };
 			nonasquare n{ v };
-			Assert::IsTrue(n.is_valid());
+			Assert::IsTrue(n.is_compatible());
 		}
 
 		TEST_METHOD(TestEmptyValid)
@@ -125,7 +134,7 @@ namespace SudokuPlayerTests
 			square empty{};
 			std::vector < square * > v{ &empty, &empty, &empty, &empty, &empty, &empty, &empty, &empty, &empty };
 			nonasquare e{ v };
-			Assert::IsTrue(e.is_valid());
+			Assert::IsTrue(e.is_compatible());
 		}
 
 		TEST_METHOD(TestFullInvalid)
@@ -141,7 +150,7 @@ namespace SudokuPlayerTests
 			square s8{ 8 };
 			std::vector < square * > v{ &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s10 };
 			nonasquare not{ v };
-			Assert::IsFalse(not.is_valid());
+			Assert::IsFalse(not.is_compatible());
 		}
 
 		TEST_METHOD(TestHoleInvalid)
@@ -157,7 +166,7 @@ namespace SudokuPlayerTests
 			square s9{ 3 };
 			std::vector < square * > v{ &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9 };
 			nonasquare not{ v };
-			Assert::IsFalse(not.is_valid());
+			Assert::IsFalse(not.is_compatible());
 		}
 
 		TEST_METHOD(TestFullCompatible)
@@ -203,7 +212,7 @@ namespace SudokuPlayerTests
 				std::make_pair(1, 6), std::make_pair(1, 7), std::make_pair(1, 8), 
 				std::make_pair(3, 2), std::make_pair(4, 2), std::make_pair(5, 2), 
 				std::make_pair(6, 2), std::make_pair(7, 2), std::make_pair(8, 2) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares01)
 		{
@@ -217,7 +226,7 @@ namespace SudokuPlayerTests
 				std::make_pair(2, 6), std::make_pair(2, 7), std::make_pair(2, 8),
 				std::make_pair(3, 4), std::make_pair(4, 4), std::make_pair(5, 4),
 				std::make_pair(6, 4), std::make_pair(7, 4), std::make_pair(8, 4) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares02)
 		{
@@ -231,7 +240,7 @@ namespace SudokuPlayerTests
 				std::make_pair(0, 3), std::make_pair(0, 4), std::make_pair(0, 5),
 				std::make_pair(3, 8), std::make_pair(4, 8), std::make_pair(5, 8),
 				std::make_pair(6, 8), std::make_pair(7, 8), std::make_pair(8, 8) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares10)
 		{
@@ -245,7 +254,7 @@ namespace SudokuPlayerTests
 				std::make_pair(3, 6), std::make_pair(3, 7), std::make_pair(3, 8),
 				std::make_pair(0, 1), std::make_pair(1, 1), std::make_pair(2, 1),
 				std::make_pair(6, 1), std::make_pair(7, 1), std::make_pair(8, 1) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares11)
 		{
@@ -259,7 +268,7 @@ namespace SudokuPlayerTests
 				std::make_pair(4, 6), std::make_pair(4, 7), std::make_pair(4, 8),
 				std::make_pair(0, 4), std::make_pair(1, 4), std::make_pair(2, 4),
 				std::make_pair(6, 4), std::make_pair(7, 4), std::make_pair(8, 4) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares12)
 		{
@@ -273,7 +282,7 @@ namespace SudokuPlayerTests
 				std::make_pair(5, 3), std::make_pair(5, 4), std::make_pair(5, 5),
 				std::make_pair(0, 6), std::make_pair(1, 6), std::make_pair(2, 6),
 				std::make_pair(6, 6), std::make_pair(7, 6), std::make_pair(8, 6) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares20)
 		{
@@ -287,7 +296,7 @@ namespace SudokuPlayerTests
 				std::make_pair(6, 6), std::make_pair(6, 7), std::make_pair(6, 8),
 				std::make_pair(0, 0), std::make_pair(1, 0), std::make_pair(2, 0),
 				std::make_pair(3, 0), std::make_pair(4, 0), std::make_pair(5, 0) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares21)
 		{
@@ -301,7 +310,7 @@ namespace SudokuPlayerTests
 				std::make_pair(7, 6), std::make_pair(7, 7), std::make_pair(7, 8),
 				std::make_pair(0, 3), std::make_pair(1, 3), std::make_pair(2, 3),
 				std::make_pair(3, 3), std::make_pair(4, 3), std::make_pair(5, 3) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
 		}
 		TEST_METHOD(TestFindConstraintSquares22)
 		{
@@ -315,7 +324,85 @@ namespace SudokuPlayerTests
 				std::make_pair(8, 3), std::make_pair(8, 4), std::make_pair(8, 5),
 				std::make_pair(0, 8), std::make_pair(1, 8), std::make_pair(2, 8),
 				std::make_pair(3, 8), std::make_pair(4, 8), std::make_pair(5, 8) };
-			Assert::AreEqual(res, expected);
+			Assert::AreEqual(expected, res);
+		}
+		TEST_METHOD(TestDegreeEmpty)
+		{
+			grid sudoku{};
+			std::multimap<int, grid::pos_t> twenties{};
+			for (int i = 0; i < 9; i++)
+				for (int j = 0; j < 9; j++)
+					twenties.insert(std::make_pair(20, std::make_pair(i, j)));
+			Assert::AreEqual(twenties, sudoku.degree);
+		}
+		TEST_METHOD(TestDegreeOneSquare)
+		{
+			grid sudoku{ "1                                                                                " };
+			std::multimap<int, grid::pos_t> deg{};
+			for (int i = 0; i < 9; i++)
+			{
+				for (int j = 0; j < 9; j++)
+				{
+					if ((i == 0 || j == 0 || (i / 3 == 0 && j / 3 == 0))	// we're on the same line, column or nonadrant
+						&& !(i == 0 && j == 0))	// BUT we're not at (0,0)
+					{
+						deg.insert(std::make_pair(19, std::make_pair(i, j)));
+					}
+					else
+					{
+						deg.insert(std::make_pair(20, std::make_pair(i, j)));
+					}
+				}
+			}
+			Assert::AreEqual(deg, sudoku.degree);
+		}
+		TEST_METHOD(TestDegreeGeneral)
+		{
+			grid sudoku{ "1                       2                          3    4 5     6                " };
+			std::multimap<int, grid::pos_t> deg{};
+			// Noooooo this was not tedious at all.
+			grid::pos_set_t twenties{
+				std::make_pair(0,0), std::make_pair(1,3), std::make_pair(1,5), std::make_pair(3,3),
+				std::make_pair(3,5), std::make_pair(4,3), std::make_pair(4,5), std::make_pair(8,7),
+				std::make_pair(8,8)};
+			for (auto p : twenties)
+				deg.insert(std::make_pair(20, p));
+			grid::pos_set_t nineteens{
+				std::make_pair(0,3), std::make_pair(0,5), std::make_pair(1,0), std::make_pair(1,4),
+				std::make_pair(1,7), std::make_pair(1,8), std::make_pair(2,3), std::make_pair(2,5),
+				std::make_pair(2,6), std::make_pair(2,7), std::make_pair(2,8), std::make_pair(3,0),
+				std::make_pair(3,1), std::make_pair(3,2), std::make_pair(3,4), std::make_pair(3,7),
+				std::make_pair(3,8), std::make_pair(4,0), std::make_pair(4,1), std::make_pair(4,2),
+				std::make_pair(4,4), std::make_pair(4,7), std::make_pair(4,8), std::make_pair(5,3),
+				std::make_pair(5,5), std::make_pair(5,6), std::make_pair(5,7), std::make_pair(5,8),
+				std::make_pair(6,4), std::make_pair(7,1), std::make_pair(7,7), std::make_pair(7,8),
+				std::make_pair(8,3), std::make_pair(8,4), std::make_pair(8,5)
+			};
+			for (auto p : nineteens)
+				deg.insert(std::make_pair(19, p));
+			grid::pos_set_t eighteens{
+				std::make_pair(0,1), std::make_pair(0,2), std::make_pair(0,4), std::make_pair(0,7),
+				std::make_pair(0,8), std::make_pair(1,1), std::make_pair(1,2), std::make_pair(1,6),
+				std::make_pair(2,0), std::make_pair(2,4), std::make_pair(3,6), std::make_pair(4,6),
+				std::make_pair(5,0), std::make_pair(5,1), std::make_pair(5,2), std::make_pair(5,4),
+				std::make_pair(6,2), std::make_pair(6,3), std::make_pair(6,5), std::make_pair(6,7),
+				std::make_pair(6,8), std::make_pair(7,2), std::make_pair(7,3), std::make_pair(7,4),
+				std::make_pair(7,5), std::make_pair(8,1), std::make_pair(8,2), std::make_pair(8,6)
+			};
+			for (auto p : eighteens)
+				deg.insert(std::make_pair(18, p));
+			grid::pos_set_t seventeens{
+				std::make_pair(0,6), std::make_pair(2,1), std::make_pair(2,2), std::make_pair(6,1),
+				std::make_pair(7,0), std::make_pair(7,6), std::make_pair(8,0)
+			};
+			for (auto p : seventeens)
+				deg.insert(std::make_pair(17, p));
+			grid::pos_set_t sixteens{
+				std::make_pair(6,0), std::make_pair(6, 6)
+			};
+			for (auto p : sixteens)
+				deg.insert(std::make_pair(16, p));
+			Assert::AreEqual(deg, sudoku.degree);
 		}
 	};
 }

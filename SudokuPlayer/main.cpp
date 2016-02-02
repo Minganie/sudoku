@@ -13,4 +13,8 @@ int main()
 	grid sudoku2{ "12345678923456789134567891245678912356789123467891234578912345689123456791234 678" };
 	sudoku2.print();
 	cout << "Grid is detected done? " << sudoku2.is_done() << endl << endl;
+	cout << "Initializing other not full sudoku grid" << endl;
+	grid sudoku3{ "1                       2                          3    4 5     6                " };
+	sudoku3.print();
+	cout << "Grid is detected done? " << sudoku3.is_done() << endl << endl;
 }

@@ -6,7 +6,7 @@ grid::grid()
 	for (int i = 0; i < 9*9; i++)
 	{
 		squares.push_back(square{});
-		degree.insert(std::pair < int, std::pair<int, int> > {20, std::pair < int, int > {(i / 9), (i % 9)}});
+		degree.insert(std::make_pair(20, std::make_pair(i / 9, i % 9)));
 	}
 	// rows
 	for (int i = 0; i < 9; i++)
@@ -83,61 +83,14 @@ grid::grid(std::string vals)
 		}
 		nonadrants.push_back(nonasquare{ nonadrant_k });
 	}
-	for (int i = 0; i < 9 * 9; i++)
+
+	// Compute the degree heuristic of each square
+	for (int i = 0; i < 9; i++)
 	{
-		int deg = 0;
-		int row = i / 9;
-		int col = i % 9;
-
-		// count unassigned squares on the same row and column
-		for (int s = 0; s < 9; s++)
+		for (int j = 0; j < 9; j++)
 		{
-			if (s != col && at(row, s).to_string() == " ")
-				deg++;
-			if (s != row && at(s, col).to_string() == " ")
-				deg++;
+			degree.insert(std::make_pair(find_degree(i, j), std::make_pair(i, j)));
 		}
-
-		// count unassigned squares in the same 3x3
-		int row_offset[2];
-		int col_offset[2];
-		switch(row % 3)
-		{
-		case 0:
-			row_offset[0] = 1;
-			row_offset[1] = 2;
-			break;
-		case 1:
-			row_offset[0] = -1;
-			row_offset[1] = 1;
-			break;
-		case 2:
-			row_offset[0] = -2;
-			row_offset[1] = -1;
-		}
-		switch (col % 3)
-		{
-		case 0:
-			col_offset[0] = 1;
-			col_offset[1] = 2;
-			break;
-		case 1:
-			col_offset[0] = -1;
-			col_offset[1] = 1;
-			break;
-		case 2:
-			col_offset[0] = -2;
-			col_offset[1] = -1;
-		}
-		for (int r = 0; r < 2; r++)
-		{
-			for (int c = 0; c < 2; c++)
-			{
-				if (at(row + row_offset[r], col + col_offset[c]).to_string() == " ")
-					deg++;
-			}
-		}
-		degree.insert(std::pair < int, std::pair<int, int> > {deg, std::pair < int, int > {row, col}});
 	}
 }
 
@@ -165,9 +118,9 @@ void grid::print() const
 	std::cout << "| " << at(4, 0).to_string() << ' ' << at(4, 1).to_string() << ' ' << at(4, 2).to_string() << " | "
 		<< at(4, 3).to_string() << ' ' << at(4, 4).to_string() << ' ' << at(4, 5).to_string() << " | "
 		<< at(4, 6).to_string() << ' ' << at(4, 7).to_string() << ' ' << at(4, 8).to_string() << " |" << std::endl;
-	std::cout << "| " << at(6, 0).to_string() << ' ' << at(6, 1).to_string() << ' ' << at(6, 2).to_string() << " | "
-		<< at(6, 3).to_string() << ' ' << at(6, 4).to_string() << ' ' << at(6, 5).to_string() << " | "
-		<< at(6, 6).to_string() << ' ' << at(6, 7).to_string() << ' ' << at(6, 8).to_string() << " |" << std::endl;
+	std::cout << "| " << at(5, 0).to_string() << ' ' << at(5, 1).to_string() << ' ' << at(5, 2).to_string() << " | "
+		<< at(5, 3).to_string() << ' ' << at(5, 4).to_string() << ' ' << at(5, 5).to_string() << " | "
+		<< at(5, 6).to_string() << ' ' << at(5, 7).to_string() << ' ' << at(5, 8).to_string() << " |" << std::endl;
 	std::cout << "+-------+-------+-------+" << std::endl;
 	std::cout << "| " << at(6, 0).to_string() << ' ' << at(6, 1).to_string() << ' ' << at(6, 2).to_string() << " | "
 		<< at(6, 3).to_string() << ' ' << at(6, 4).to_string() << ' ' << at(6, 5).to_string() << " | "
@@ -215,30 +168,30 @@ bool grid::is_compatible() const
 {
 	for (nonasquare r : rows)
 	{
-		if (!r.is_valid())
+		if (!r.is_compatible())
 			return false;
 	}
 	for (nonasquare c : cols)
 	{
-		if (!c.is_valid())
+		if (!c.is_compatible())
 			return false;
 	}
 	for (nonasquare n : nonadrants)
 	{
-		if (!n.is_valid())
+		if (!n.is_compatible())
 			return false;
 	}
 	return true;
 }
 
 
-std::set<std::pair<int, int>> grid::find_constraints(int i, int j) const
+grid::pos_set_t grid::find_constraints(int i, int j) const
 {
 	int meta_i = i / 3;	// nonadrant coordinates
 	int meta_j = j / 3;
 
 	// What are the positions of the other squares in the nonadrant?
-	std::set<std::pair<int, int>> pos{};
+	pos_set_t pos{};
 	for (int a = 0; a < 3; a++)
 	{
 		for (int b = 0; b < 3; b++)
@@ -265,5 +218,21 @@ std::set<std::pair<int, int>> grid::find_constraints(int i, int j) const
 			pos.insert(std::make_pair(a*3 + y, j));
 	}
 
+	// Return the complete set of (i,j) positions
 	return pos;
+}
+
+int grid::find_degree(int i, int j) const
+{
+	int degree{};
+
+	for (pos_t p : find_constraints(i, j))
+	{
+		try {
+			int a = at(p.first, p.second).val();	// check if this gets deleted in release because I don't do anything with it
+		} catch (int) {	// square was unassigned
+			degree++;
+		}
+	}
+	return degree;
 }

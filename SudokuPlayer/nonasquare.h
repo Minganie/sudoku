@@ -11,7 +11,7 @@ public:	// FOR TESTS ONLY
 public:
 	nonasquare(std::vector<square*>);
 	~nonasquare();
-	bool is_valid() const;
+	bool is_compatible() const;
 };
 
 #endif

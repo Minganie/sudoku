@@ -10,22 +10,19 @@ nonasquare::~nonasquare()
 }
 
 
-bool nonasquare::is_valid() const
+bool nonasquare::is_compatible() const
 {
 	std::vector<int> counts(9, 0);
 	for (square* s : squares)
 	{
-		try
-		{
+		try {
 			counts[s->val()-1] += 1;
 			if (counts[s->val()-1] > 1)
 				return false;
-		}
-		catch (int)
-		{
+		} catch (int) {
 			//square is unassigned
 		}
-		
 	}
+	// If we get here, all the squares were OK
 	return true;
 }
