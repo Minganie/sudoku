@@ -19,3 +19,5 @@ The third step, which will certainly amount to a lot more work, is a sudoku help
 At this point, I should probably start studying performance metrics because rule of thumb says all this will require **a lot** of iterating through grid squares. This will be a great occasion to learn about profilers, which I've never used before.
 ###GUI
 Once all the internal workings are in place, it would be sad to have done all this work for a console application that not a single real-world user would want to use. This will be a great occasion to learn about graphic interfaces, which I've only done in HTML so far. Since the project is C++, I'm thinking of getting some hands-on experience with Qt.
+##Reference materials
+Giving credit where credit is due, the reference materials I use are listed in [the wiki](https://github.com/Minganie/sudoku/wiki).
